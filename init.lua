@@ -1,3 +1,4 @@
+--
 --[[
 
 =====================================================================
@@ -91,7 +92,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -181,11 +182,37 @@ vim.api.nvim_set_keymap('n', '<leader>w', ':w<CR>', { noremap = true, silent = t
 vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+-- Split horizontally
+vim.keymap.set('n', '<Leader>_', ':split<cr><C-w>l', { desc = 'Split horizontally and move to window' })
+
+-- v key in line mode and vice versa
+vim.keymap.set('n', 'v', 'V')
+vim.keymap.set('n', 'V', 'v')
+
+-- map enter for gg
+-- vim.keymap.set({'n', 'v'}, '<cr>', 'gg')
+
+vim.keymap.set('n', '<leader>ü', ':MatchupWhereAmI<CR>', { desc = 'Echos you position in the code' })
+
+-- multiword editing throughout the file
+vim.keymap.set('n', '<Leader>m', [[:%s/\<<C-r><C-w>\>//gI<Left><Left><Left>]])
+
 -- Diagnostic keymaps
-vim.keymap.set('n', 'Öd', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
-vim.keymap.set('n', 'öd', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
+vim.keymap.set('n', 'Üd', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
+vim.keymap.set('n', 'üd', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+
+vim.keymap.set('n', '<F3>', ':MinimapToggle<CR>', { desc = 'MinimapToggle' })
+
+-- vim.keymap.set('n',        's', '<Plug>(leap)')
+-- vim.keymap.set('n',        'S', '<Plug>(leap-from-window)')
+-- vim.keymap.set({'x', 'o'}, 's', '<Plug>(leap-forward)')
+-- vim.keymap.set({'x', 'o'}, 'S', '<Plug>(leap-backward)')
+
+vim.keymap.set({'n', 'x', 'o'}, 's',  '<Plug>(leap-forward)')
+vim.keymap.set({'n', 'x', 'o'}, 'S',  '<Plug>(leap-backward)')
+vim.keymap.set({'n', 'x', 'o'}, 'gs', '<Plug>(leap-from-window)')
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -250,7 +277,8 @@ require('lazy').setup({
 
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
-
+  'othree/xml.vim',
+  -- 'sukima/xmledit',
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -320,12 +348,150 @@ require('lazy').setup({
     },
   },
 
-  -- { "zbirenbaum/copilot.lua"},
-  -- opts = {
-  --   -- These are disabled in the default configuration.
-  --   suggestion = { enabled = true },
-  --   panel = { enabled = true },
+  {
+    'andymass/vim-matchup',
+    setup = function()
+      vim.g.matchup_matchparen_offscreen = { method = 'popup' }
+      require('nvim-treesitter.configs').setup {
+        matchup = {
+          enable = true, -- mandatory, false will disable the whole extension
+          disable = { 'c', 'ruby' }, -- optional, list of language that will be disabled
+          -- [options]
+        },
+      }
+    end,
+  },
+
+  {
+    'ggandor/leap.nvim',
+    name = 'leap',
+    config = function()
+      -- require('leap').add_default_mappings()
+    end,
+  },
+
+  { "tpope/vim-repeat" },
+
+  {
+    'wfxr/minimap.vim',
+    build = 'cargo install --locked code-minimap',
+    -- cmd = {"Minimap", "MinimapClose", "MinimapToggle", "MinimapRefresh", "MinimapUpdateHighlight"},
+    config = function()
+      vim.cmd 'let g:minimap_width = 10'
+      vim.cmd 'let g:minimap_auto_start = 1'
+      vim.cmd 'let g:minimap_auto_start_win_enter = 1'
+    end,
+  },
+
+  {
+    'nacro90/numb.nvim',
+    event = 'BufRead',
+    config = function()
+      require('numb').setup {
+        show_numbers = true, -- Enable 'number' for the window while peeking
+        show_cursorline = true, -- Enable 'cursorline' for the window while peeking
+      }
+    end,
+  },
+
+  {
+    'ruifm/gitlinker.nvim',
+    event = 'BufRead',
+    config = function()
+      require('gitlinker').setup {
+        opts = {
+          -- remote = 'github', -- force the use of a specific remote
+          -- adds current line nr in the url for normal mode
+          add_current_line_on_normal_mode = true,
+          -- callback for what to do with the url
+          action_callback = require('gitlinker.actions').open_in_browser,
+          -- print the url after performing the action
+          print_url = false,
+          -- mapping to call url generation
+          mappings = '<leader>gy',
+        },
+      }
+    end,
+    dependencies = 'nvim-lua/plenary.nvim',
+  },
+
+  {
+    'tpope/vim-fugitive',
+    cmd = {
+      'G',
+      'Git',
+      'Gdiffsplit',
+      'Gread',
+      'Gwrite',
+      'Ggrep',
+      'GMove',
+      'GDelete',
+      'GBrowse',
+      'GRemove',
+      'GRename',
+      'Glgrep',
+      'Gedit',
+    },
+    ft = { 'fugitive' },
+  },
+
+  -- {
+  --   'tzachar/cmp-tabnine',
+  --   build = './install.sh',
+  --   dependencies = 'hrsh7th/nvim-cmp',
+  --   event = 'InsertEnter',
   -- },
+
+  --
+  --
+  {
+    'zbirenbaum/copilot-cmp',
+    event = 'InsertEnter',
+    dependencies = { 'zbirenbaum/copilot.lua' },
+    config = function()
+      vim.defer_fn(function()
+        require('copilot').setup() -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
+        require('copilot_cmp').setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
+      end, 100)
+    end,
+  },
+
+  {
+    'karb94/neoscroll.nvim',
+    event = 'WinScrolled',
+    config = function()
+      require('neoscroll').setup {
+        -- All these keys will be mapped to their corresponding default scrolling animation
+        mappings = { '<C-u>', '<C-d>', '<C-b>', '<C-f>', '<C-y>', '<C-e>', 'zt', 'zz', 'zb' },
+        hide_cursor = true, -- Hide cursor while scrolling
+        stop_eof = true, -- Stop at <EOF> when scrolling downwards
+        use_local_scrolloff = false, -- Use the local scope of scrolloff instead of the global scope
+        respect_scrolloff = false, -- Stop scrolling when the cursor reaches the scrolloff margin of the file
+        cursor_scrolls_alone = true, -- The cursor will keep on scrolling even if the window cannot scroll further
+        easing_function = nil, -- Default easing function
+        pre_hook = nil, -- Function to run before the scrolling animation starts
+        post_hook = nil, -- Function to run after the scrolling animation ends
+      }
+    end,
+  },
+
+  {
+    'ethanholz/nvim-lastplace',
+    event = 'BufRead',
+    config = function()
+      require('nvim-lastplace').setup {
+        lastplace_ignore_buftype = { 'quickfix', 'nofile', 'help' },
+        lastplace_ignore_filetype = {
+          'gitcommit',
+          'gitrebase',
+          'svn',
+          'hgcommit',
+        },
+        lastplace_open_folds = true,
+      }
+    end,
+  },
+
   --
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
@@ -362,6 +528,63 @@ require('lazy').setup({
       require('which-key').register({
         ['<leader>h'] = { 'Git [H]unk' },
       }, { mode = 'v' })
+    end,
+  },
+
+  {
+    'kylechui/nvim-surround',
+    version = '*', -- Use for stability; omit to use `main` branch for the latest features
+    event = 'VeryLazy',
+    config = function()
+      require('nvim-surround').setup {
+        -- Configuration here, or leave empty to use defaults
+      }
+    end,
+  },
+
+  {
+    { 'akinsho/toggleterm.nvim', version = '*', config = true },
+    -- or
+    -- {'akinsho/toggleterm.nvim', version = "*", opts = {--[[ things you want to change go here]]}}
+  },
+
+  -- {
+  --   "Pocco81/true-zen.nvim",
+  --   lazy = false,
+  --   opts = {
+  --     -- integrations = {
+  --     --   kitty = {
+  --     --     -- increment font size in Kitty.
+  --     --     enabled = true,
+  --     --     font = "+4",
+  --     --   },
+  --     -- },
+  --   },
+  -- },
+
+  {
+    'gennaro-tedesco/nvim-jqx',
+    event = { 'BufReadPost' },
+    ft = { 'json', 'yaml' },
+    init = function()
+      local jqx = require 'nvim-jqx.config'
+      jqx.geometry.border = 'single'
+      jqx.geometry.width = 0.7
+      jqx.query_key = 'X' -- keypress to query jq on keys
+      jqx.sort = false -- show the json keys as they appear instead of sorting them alphabetically
+      jqx.show_legend = true -- show key queried as first line in the jqx floating window
+      jqx.use_quickfix = false -- if you prefer the location list
+      --automatically formatting your json files as you open them
+      local jqx = vim.api.nvim_create_augroup('Jqx', {})
+      vim.api.nvim_clear_autocmds { group = jqx }
+      vim.api.nvim_create_autocmd('BufWinEnter', {
+        pattern = { '*.json', '*.yaml' },
+        desc = 'preview json and yaml files on open',
+        group = jqx,
+        callback = function()
+          vim.cmd.JqxList()
+        end,
+      })
     end,
   },
 
@@ -807,7 +1030,7 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          -- ['<C-y>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
