@@ -1,4 +1,4 @@
---
+
 --[[
 
 =====================================================================
@@ -106,7 +106,7 @@ vim.opt.number = true
 -- vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
-vim.opt.mouse = 'a'
+-- vim.opt.mouse = 'a'
 
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
@@ -192,6 +192,13 @@ vim.keymap.set('n', '<Leader>_', ':split<cr><C-w>l', { desc = 'Split horizontall
 vim.keymap.set('n', 'v', 'V')
 vim.keymap.set('n', 'V', 'v')
 
+
+-- [/] key in normal mode
+-- vim.keymap.set('n', 'ö', '[', { noremap = true, silent = true, desc = '[' })
+vim.keymap.set('n', 'Ö', ']', { noremap = true, silent = true, desc = ']' })
+-- vim.keymap.set('n', 'ö', '[')
+-- vim.keymap.set('n', 'Ö', ']')
+
 -- map enter for gg
 -- vim.keymap.set({'n', 'v'}, '<cr>', 'gg')
 
@@ -208,14 +215,14 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 
 vim.keymap.set('n', '<F3>', ':MinimapToggle<CR>', { desc = 'MinimapToggle' })
 
--- vim.keymap.set('n',        's', '<Plug>(leap)')
--- vim.keymap.set('n',        'S', '<Plug>(leap-from-window)')
--- vim.keymap.set({'x', 'o'}, 's', '<Plug>(leap-forward)')
--- vim.keymap.set({'x', 'o'}, 'S', '<Plug>(leap-backward)')
+vim.keymap.set('n', 'f', '<Plug>(leap)')
+vim.keymap.set('n', 'F', '<Plug>(leap-from-window)')
+vim.keymap.set({ 'x', 'o' }, 'f', '<Plug>(leap-forward)')
+vim.keymap.set({ 'x', 'o' }, 'F', '<Plug>(leap-backward)')
 
-vim.keymap.set({'n', 'x', 'o'}, 's',  '<Plug>(leap-forward)')
-vim.keymap.set({'n', 'x', 'o'}, 'S',  '<Plug>(leap-backward)')
-vim.keymap.set({'n', 'x', 'o'}, 'gs', '<Plug>(leap-from-window)')
+-- vim.keymap.set({'n', 'x', 'o'}, 'f',  '<Plug>(leap-forward)')
+-- vim.keymap.set({'n', 'x', 'o'}, 'F',  '<Plug>(leap-backward)')
+-- vim.keymap.set({'n', 'x', 'o'}, 'gö', '<Plug>(leap-from-window)')
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -224,6 +231,7 @@ vim.keymap.set({'n', 'x', 'o'}, 'gs', '<Plug>(leap-from-window)')
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.keymap.set('n', '<F5>', ':ToggleTerm<CR>', { desc = 'ToggleTerm' })
 
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
@@ -355,7 +363,7 @@ require('lazy').setup({
       vim.g.matchup_matchparen_offscreen = { method = 'popup' }
       require('nvim-treesitter.configs').setup {
         matchup = {
-          enable = true, -- mandatory, false will disable the whole extension
+          enable = false, -- mandatory, false will disable the whole extension
           disable = { 'c', 'ruby' }, -- optional, list of language that will be disabled
           -- [options]
         },
@@ -368,10 +376,19 @@ require('lazy').setup({
     name = 'leap',
     config = function()
       -- require('leap').add_default_mappings()
+      -- local leap = require 'leap'
+      -- leap.opts.special_keys = {
+      --   next_target = '<enter>',
+      --   prev_target = { '<backspace>', '<tab>' },
+      --   next_group = 'C-<space>',
+      --   prev_group = { '<backspace>', '<tab>' },
+      -- }
     end,
   },
 
-  { "tpope/vim-repeat" },
+  { 'tpope/vim-repeat' },
+
+  { 'chrisbra/unicode.vim' },
 
   {
     'wfxr/minimap.vim',
@@ -416,26 +433,26 @@ require('lazy').setup({
     dependencies = 'nvim-lua/plenary.nvim',
   },
 
-  {
-    'tpope/vim-fugitive',
-    cmd = {
-      'G',
-      'Git',
-      'Gdiffsplit',
-      'Gread',
-      'Gwrite',
-      'Ggrep',
-      'GMove',
-      'GDelete',
-      'GBrowse',
-      'GRemove',
-      'GRename',
-      'Glgrep',
-      'Gedit',
-    },
-    ft = { 'fugitive' },
-  },
-
+  -- {
+  --   'tpope/vim-fugitive',
+  --   cmd = {
+  --     'G',
+  --     'Git',
+  --     'Gdiffsplit',
+  --     'Gread',
+  --     'Gwrite',
+  --     'Ggrep',
+  --     'GMove',
+  --     'GDelete',
+  --     'GBrowse',
+  --     'GRemove',
+  --     'GRename',
+  --     'Glgrep',
+  --     'Gedit',
+  --   },
+  --   ft = { 'fugitive' },
+  -- },
+  --
   -- {
   --   'tzachar/cmp-tabnine',
   --   build = './install.sh',
@@ -443,20 +460,20 @@ require('lazy').setup({
   --   event = 'InsertEnter',
   -- },
 
-  --
-  --
-  {
-    'zbirenbaum/copilot-cmp',
-    event = 'InsertEnter',
-    dependencies = { 'zbirenbaum/copilot.lua' },
-    config = function()
-      vim.defer_fn(function()
-        require('copilot').setup() -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
-        require('copilot_cmp').setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
-      end, 100)
-    end,
-  },
-
+  -- --
+  -- --
+  -- {
+  --   'zbirenbaum/copilot-cmp',
+  --   event = 'InsertEnter',
+  --   dependencies = { 'zbirenbaum/copilot.lua' },
+  --   config = function()
+  --     vim.defer_fn(function()
+  --       require('copilot').setup() -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
+  --       require('copilot_cmp').setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
+  --     end, 100)
+  --   end,
+  -- },
+ 
   {
     'karb94/neoscroll.nvim',
     event = 'WinScrolled',
@@ -549,17 +566,31 @@ require('lazy').setup({
         },
       },
 
-      -- Document existing key chains
-      spec = {
-        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
-        { '<leader>d', group = '[D]ocument' },
-        { '<leader>r', group = '[R]ename' },
-        { '<leader>s', group = '[S]earch' },
-        { '<leader>w', group = '[W]orkspace' },
-        { '<leader>t', group = '[T]oggle' },
-        { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+    config = function() -- This is the function that runs, AFTER loading
+      local wk = require("which-key")
+      wk.add({
+        { "<leader>c", group = "[C]ode" },
+        { "<leader>c_", hidden = true },
+        { "<leader>d", group = "[D]ocument" },
+        { "<leader>d_", hidden = true },
+        { "<leader>h", group = "Git [H]unk" },
+        { "<leader>h_", hidden = true },
+        { "<leader>r", group = "[R]ename" },
+        { "<leader>r_", hidden = true },
+        { "<leader>s", group = "[S]earch" },
+        { "<leader>s_", hidden = true },
+        { "<leader>t", group = "[T]oggle" },
+        { "<leader>t_", hidden = true },
+        { "<leader>w", group = "[W]orkspace" },
+        { "<leader>w_", hidden = true },
       },
-    },
+        {
+          -- Nested mappings are allowed and can be added in any order
+          -- Most attributes can be inherited or overridden on any level
+          -- There's no limit to the depth of nesting
+          { "<leader>h", desc = "Git [H]unk", mode = "v" }
+        })
+    end,
   },
 
   {
@@ -606,16 +637,16 @@ require('lazy').setup({
       jqx.show_legend = true -- show key queried as first line in the jqx floating window
       jqx.use_quickfix = false -- if you prefer the location list
       --automatically formatting your json files as you open them
-      local jqx = vim.api.nvim_create_augroup('Jqx', {})
-      vim.api.nvim_clear_autocmds { group = jqx }
-      vim.api.nvim_create_autocmd('BufWinEnter', {
-        pattern = { '*.json', '*.yaml' },
-        desc = 'preview json and yaml files on open',
-        group = jqx,
-        callback = function()
-          vim.cmd.JqxList()
-        end,
-      })
+      -- local jqx = vim.api.nvim_create_augroup('Jqx', {})
+      -- vim.api.nvim_clear_autocmds { group = jqx }
+      -- vim.api.nvim_create_autocmd('BufWinEnter', {
+      --   pattern = { '*.json', '*.yaml' },
+      --   desc = 'preview json and yaml files on open',
+      --   group = jqx,
+      --   callback = function()
+      --     vim.cmd.JqxList()
+      --   end,
+      -- })
     end,
   },
 
@@ -921,6 +952,8 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
+        bashls = {},
+        lemminx = {},
 
         lua_ls = {
           -- cmd = { ... },
@@ -1021,6 +1054,13 @@ require('lazy').setup({
     },
   },
 
+  {
+    'fei6409/log-highlight.nvim',
+    config = function()
+      require('log-highlight').setup {}
+    end,
+  },
+
   { -- Autocompletion
     'hrsh7th/nvim-cmp',
     event = 'InsertEnter',
@@ -1041,12 +1081,12 @@ require('lazy').setup({
           -- `friendly-snippets` contains a variety of premade snippets.
           --    See the README about individual language/framework/plugin snippets:
           --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
+          {
+            'rafamadriz/friendly-snippets',
+            config = function()
+              require('luasnip.loaders.from_vscode').lazy_load()
+            end,
+          },
         },
       },
       'saadparwaiz1/cmp_luasnip',
@@ -1215,7 +1255,7 @@ require('lazy').setup({
   },
 
   { -- Collection of various small independent plugins/modules
-    'echasnovski/mini.nvim',
+    'echasnovski/mini.nvim', version = false,
     config = function()
       -- Better Around/Inside textobjects
       --
@@ -1231,6 +1271,14 @@ require('lazy').setup({
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
+
+      require('mini.pairs').setup()
+
+      require('mini.move').setup()
+
+      require('mini.bracketed').setup()
+
+      require('mini.clue').setup()
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
@@ -1251,13 +1299,18 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
+
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
+<<<<<<< HEAD
       ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+=======
+      ensure_installed = { 'bash', 'xml', 'yaml', 'sql', 'git_rebase', 'helm', 'jq', 'jsonc', 'regex', 'ssh_config', 'tmux', 'python', 'java', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
+>>>>>>> 22c9422 (Update mini + keymaps + packages)
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1289,7 +1342,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   require 'kickstart.plugins.indent_line',
   require 'kickstart.plugins.lint',
-  require 'kickstart.plugins.autopairs',
+  -- require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
@@ -1325,7 +1378,7 @@ require('lazy').setup({
   },
 })
 
--- vim.cmd [[colorscheme monokai-nightasty]]
+vim.cmd [[colorscheme retrobox]]
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
