@@ -452,20 +452,20 @@ require('lazy').setup({
   --   event = 'InsertEnter',
   -- },
 
-  --
-  --
-  {
-    'zbirenbaum/copilot-cmp',
-    event = 'InsertEnter',
-    dependencies = { 'zbirenbaum/copilot.lua' },
-    config = function()
-      vim.defer_fn(function()
-        require('copilot').setup() -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
-        require('copilot_cmp').setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
-      end, 100)
-    end,
-  },
-
+  -- --
+  -- --
+  -- {
+  --   'zbirenbaum/copilot-cmp',
+  --   event = 'InsertEnter',
+  --   dependencies = { 'zbirenbaum/copilot.lua' },
+  --   config = function()
+  --     vim.defer_fn(function()
+  --       require('copilot').setup() -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
+  --       require('copilot_cmp').setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
+  --     end, 100)
+  --   end,
+  -- },
+ 
   {
     'karb94/neoscroll.nvim',
     event = 'WinScrolled',
@@ -1021,6 +1021,13 @@ require('lazy').setup({
     },
   },
 
+  {
+    'fei6409/log-highlight.nvim',
+    config = function()
+      require('log-highlight').setup {}
+    end,
+  },
+
   { -- Autocompletion
     'hrsh7th/nvim-cmp',
     event = 'InsertEnter',
@@ -1321,7 +1328,7 @@ require('lazy').setup({
   },
 })
 
--- vim.cmd [[colorscheme monokai-nightasty]]
+vim.cmd [[colorscheme retrobox]]
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
