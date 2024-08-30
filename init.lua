@@ -1,4 +1,4 @@
---
+
 --[[
 
 =====================================================================
@@ -192,6 +192,13 @@ vim.keymap.set('n', '<Leader>_', ':split<cr><C-w>l', { desc = 'Split horizontall
 vim.keymap.set('n', 'v', 'V')
 vim.keymap.set('n', 'V', 'v')
 
+
+-- [/] key in normal mode
+-- vim.keymap.set('n', 'ö', '[', { noremap = true, silent = true, desc = '[' })
+vim.keymap.set('n', 'Ö', ']', { noremap = true, silent = true, desc = ']' })
+-- vim.keymap.set('n', 'ö', '[')
+-- vim.keymap.set('n', 'Ö', ']')
+
 -- map enter for gg
 -- vim.keymap.set({'n', 'v'}, '<cr>', 'gg')
 
@@ -224,6 +231,7 @@ vim.keymap.set({ 'x', 'o' }, 'F', '<Plug>(leap-backward)')
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.keymap.set('n', '<F5>', ':ToggleTerm<CR>', { desc = 'ToggleTerm' })
 
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
@@ -927,6 +935,8 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
+        bashls = {},
+        lemminx = {},
 
         lua_ls = {
           -- cmd = { ... },
@@ -1228,7 +1238,7 @@ require('lazy').setup({
   },
 
   { -- Collection of various small independent plugins/modules
-    'echasnovski/mini.nvim',
+    'echasnovski/mini.nvim', version = false,
     config = function()
       -- Better Around/Inside textobjects
       --
@@ -1244,6 +1254,14 @@ require('lazy').setup({
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
+
+      require('mini.pairs').setup()
+
+      require('mini.move').setup()
+
+      require('mini.bracketed').setup()
+
+      require('mini.clue').setup()
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
@@ -1264,13 +1282,14 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
+
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'xml', 'yaml', 'sql', 'git_rebase', 'helm', 'jq', 'jsonc', 'regex', 'ssh_config', 'tmux', 'python', 'java', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1302,7 +1321,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   require 'kickstart.plugins.indent_line',
   require 'kickstart.plugins.lint',
-  require 'kickstart.plugins.autopairs',
+  -- require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
