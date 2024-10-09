@@ -1,4 +1,3 @@
-
 --[[
 
 =====================================================================
@@ -189,7 +188,6 @@ vim.keymap.set('n', '<Leader>_', ':split<cr><C-w>l', { desc = 'Split horizontall
 vim.keymap.set('n', 'v', 'V')
 vim.keymap.set('n', 'V', 'v')
 
-
 -- [/] key in normal mode
 -- vim.keymap.set('n', 'ö', '[', { noremap = true, silent = true, desc = '[' })
 vim.keymap.set('n', 'Ö', ']', { noremap = true, silent = true, desc = ']' })
@@ -211,6 +209,8 @@ vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagn
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 vim.keymap.set('n', '<F3>', ':MinimapToggle<CR>', { desc = 'MinimapToggle' })
+vim.keymap.set('n', '<F4>', ':Neogit<CR>', { desc = 'Neogit' })
+vim.keymap.set('n', '<F6>', ':DiffviewOpen<CR>', { desc = 'DiffviewOpen' })
 
 vim.keymap.set('n', 'f', '<Plug>(leap)')
 vim.keymap.set('n', 'F', '<Plug>(leap-from-window)')
@@ -417,11 +417,15 @@ require('lazy').setup({
     config = function()
       require('gitlinker').setup {
         opts = {
-          -- remote = 'github', -- force the use of a specific remote
+          remote = nil, -- force the use of a specific remote
           -- adds current line nr in the url for normal mode
           add_current_line_on_normal_mode = true,
           -- callback for what to do with the url
-          action_callback = require('gitlinker.actions').open_in_browser,
+          callbacks = {
+            ['git.ivz.cn.ard.de'] = require('gitlinker.hosts').get_gitlab_type_url
+          },
+          -- action_callback = require('gitlinker.actions').open_in_browser,
+          action_callback = require('gitlinker.actions').copy_to_clipboard,
           -- print the url after performing the action
           print_url = false,
           -- mapping to call url generation
@@ -472,7 +476,7 @@ require('lazy').setup({
   --     end, 100)
   --   end,
   -- },
- 
+
   {
     'karb94/neoscroll.nvim',
     event = 'WinScrolled',
@@ -529,29 +533,28 @@ require('lazy').setup({
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     config = function() -- This is the function that runs, AFTER loading
-      local wk = require("which-key")
+      local wk = require 'which-key'
       wk.add({
-        { "<leader>c", group = "[C]ode" },
-        { "<leader>c_", hidden = true },
-        { "<leader>d", group = "[D]ocument" },
-        { "<leader>d_", hidden = true },
-        { "<leader>h", group = "Git [H]unk" },
-        { "<leader>h_", hidden = true },
-        { "<leader>r", group = "[R]ename" },
-        { "<leader>r_", hidden = true },
-        { "<leader>s", group = "[S]earch" },
-        { "<leader>s_", hidden = true },
-        { "<leader>t", group = "[T]oggle" },
-        { "<leader>t_", hidden = true },
-        { "<leader>w", group = "[W]orkspace" },
-        { "<leader>w_", hidden = true },
-      },
-        {
-          -- Nested mappings are allowed and can be added in any order
-          -- Most attributes can be inherited or overridden on any level
-          -- There's no limit to the depth of nesting
-          { "<leader>h", desc = "Git [H]unk", mode = "v" }
-        })
+        { '<leader>c', group = '[C]ode' },
+        { '<leader>c_', hidden = true },
+        { '<leader>d', group = '[D]ocument' },
+        { '<leader>d_', hidden = true },
+        { '<leader>h', group = 'Git [H]unk' },
+        { '<leader>h_', hidden = true },
+        { '<leader>r', group = '[R]ename' },
+        { '<leader>r_', hidden = true },
+        { '<leader>s', group = '[S]earch' },
+        { '<leader>s_', hidden = true },
+        { '<leader>t', group = '[T]oggle' },
+        { '<leader>t_', hidden = true },
+        { '<leader>w', group = '[W]orkspace' },
+        { '<leader>w_', hidden = true },
+      }, {
+        -- Nested mappings are allowed and can be added in any order
+        -- Most attributes can be inherited or overridden on any level
+        -- There's no limit to the depth of nesting
+        { '<leader>h', desc = 'Git [H]unk', mode = 'v' },
+      })
     end,
   },
 
@@ -970,13 +973,15 @@ require('lazy').setup({
       -- end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        xml = { 'xmllint' },
+        xml = { 'xmlformatter' },
+        xsl = { 'xmlformatter' },
         yaml = { 'yamlfix' },
-        sql = { 'sqlfluff' },
-        shell = { 'shellcheck' },
+        sql = { 'sqlfmt' },
+        shell = { 'beautysh' },
+        java = { 'ast-grep' },
         -- xsl = { 'xmllint', 'prettier' },
         -- xsl = { 'xmllint' },
-        -- markdown = { 'markdownlint' },
+        markdown = { 'prettier' },
         json = { 'jq' },
         python = { 'black' },
         -- Conform can also run multiple formatters sequentially
@@ -1185,7 +1190,8 @@ require('lazy').setup({
   },
 
   { -- Collection of various small independent plugins/modules
-    'echasnovski/mini.nvim', version = false,
+    'echasnovski/mini.nvim',
+    version = false,
     config = function()
       -- Better Around/Inside textobjects
       --
@@ -1234,7 +1240,29 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'xml', 'yaml', 'sql', 'git_rebase', 'helm', 'jq', 'jsonc', 'regex', 'ssh_config', 'tmux', 'python', 'java', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
+      ensure_installed = {
+        'bash',
+        'xml',
+        'yaml',
+        'sql',
+        'git_rebase',
+        'helm',
+        'jq',
+        'jsonc',
+        'regex',
+        'ssh_config',
+        'tmux',
+        'python',
+        'java',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'vim',
+        'vimdoc',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
