@@ -210,7 +210,8 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 
 vim.keymap.set('n', '<F3>', ':MinimapToggle<CR>', { desc = 'MinimapToggle' })
 vim.keymap.set('n', '<F4>', ':Neogit<CR>', { desc = 'Neogit' })
-vim.keymap.set('n', '<F6>', ':DiffviewOpen<CR>', { desc = 'DiffviewOpen' })
+vim.keymap.set('n', '<F5>', ':Gitsigns toggle_current_line_blame<CR>', { desc = 'Gitsigns toggle blame line' })
+vim.keymap.set('n', '<F7>', ':DiffviewOpen<CR>', { desc = 'DiffviewOpen' })
 
 vim.keymap.set('n', 'f', '<Plug>(leap)')
 vim.keymap.set('n', 'F', '<Plug>(leap-from-window)')
@@ -228,7 +229,7 @@ vim.keymap.set({ 'x', 'o' }, 'F', '<Plug>(leap-backward)')
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
-vim.keymap.set('n', '<F5>', ':ToggleTerm<CR>', { desc = 'ToggleTerm' })
+vim.keymap.set('n', '<F6>', ':ToggleTerm<CR>', { desc = 'ToggleTerm' })
 
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
@@ -422,7 +423,7 @@ require('lazy').setup({
           add_current_line_on_normal_mode = true,
           -- callback for what to do with the url
           callbacks = {
-            ['git.ivz.cn.ard.de'] = require('gitlinker.hosts').get_gitlab_type_url
+            ['git.ivz.cn.ard.de'] = require('gitlinker.hosts').get_gitlab_type_url,
           },
           -- action_callback = require('gitlinker.actions').open_in_browser,
           action_callback = require('gitlinker.actions').copy_to_clipboard,
@@ -1291,6 +1292,16 @@ require('lazy').setup({
     end,
   },
 
+  {
+    's1n7ax/nvim-window-picker',
+    name = 'window-picker',
+    event = 'VeryLazy',
+    version = '2.*',
+    config = function()
+      require('window-picker').setup()
+    end,
+  },
+
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
@@ -1335,7 +1346,7 @@ require('lazy').setup({
   },
 })
 
-vim.cmd [[colorscheme retrobox]]
+vim.cmd [[colorscheme slate]]
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
