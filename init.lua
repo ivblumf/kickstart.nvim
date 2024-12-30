@@ -211,9 +211,16 @@ vim.keymap.set('n', 'üd', vim.diagnostic.goto_next, { desc = 'Go to next [D]iag
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+vim.keymap.set('n', '<F2>', ':Copilot enable<CR>', { desc = 'Copilot enable' })
 vim.keymap.set('n', '<F3>', ':MinimapToggle<CR>', { desc = 'MinimapToggle' })
 vim.keymap.set('n', '<F4>', ':Neogit<CR>', { desc = 'Neogit' })
 vim.keymap.set('n', '<F5>', ':Gitsigns toggle_current_line_blame<CR>', { desc = 'Gitsigns toggle blame line' })
+
+-- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
+-- or just use <C-\><C-n> to exit terminal mode
+vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.keymap.set('n', '<F6>', ':ToggleTerm<CR>', { desc = 'ToggleTerm' })
+
 vim.keymap.set('n', '<F7>', ':DiffviewOpen<CR>', { desc = 'DiffviewOpen' })
 
 vim.keymap.set('n', 'f', '<Plug>(leap)')
@@ -229,10 +236,6 @@ vim.keymap.set({ 'x', 'o' }, 'F', '<Plug>(leap-backward)')
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
 --
--- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
--- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
-vim.keymap.set('n', '<F6>', ':ToggleTerm<CR>', { desc = 'ToggleTerm' })
 
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
@@ -1218,7 +1221,7 @@ require('lazy').setup({
       -- vim.o.background = 'light' -- dark | light
 
       require('monokai-nightasty').load(opts)
-      vim.cmd [[colorscheme monokai-nightasty]]
+      -- vim.cmd [[colorscheme monokai-nightasty]]
     end,
   },
 
@@ -1234,7 +1237,7 @@ require('lazy').setup({
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       -- vim.cmd.colorscheme 'tokyonight-night'
-      vim.cmd.colorscheme 'retrobox'
+      -- vim.cmd.colorscheme 'retrobox'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
@@ -1410,7 +1413,11 @@ require('lazy').setup({
   },
 })
 
+-- Set colorscheme
 vim.cmd [[colorscheme slate]]
+
+-- start vim with copilot disabled by default
+vim.cmd 'silent! Copilot disable'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
