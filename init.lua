@@ -216,7 +216,6 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('n', '<F2>', ':Copilot enable<CR>', { desc = 'Copilot enable' })
 vim.keymap.set('n', '<F3>', ':MinimapToggle<CR>', { desc = 'MinimapToggle' })
 vim.keymap.set('n', '<F4>', ':Neogit<CR>', { desc = 'Neogit' })
-vim.keymap.set('n', '<F5>', ':Gitsigns toggle_current_line_blame<CR>', { desc = 'Gitsigns toggle blame line' })
 
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
@@ -1027,22 +1026,22 @@ require('lazy').setup({
     },
     opts = {
       notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { xsl = true, xml = true, c = true, cpp = true }
-        local lsp_format_opt
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          lsp_format_opt = 'never'
-        else
-          lsp_format_opt = 'fallback'
-        end
-        return {
-          timeout_ms = 500,
-          lsp_format = lsp_format_opt,
-        }
-      end,
+      -- format_on_save = function(bufnr)
+      --   -- Disable "format_on_save lsp_fallback" for languages that don't
+      --   -- have a well standardized coding style. You can add additional
+      --   -- languages here or re-enable it for the disabled ones.
+      --   local disable_filetypes = { xsl = false, xml = false, c = true, cpp = true }
+      --   local lsp_format_opt
+      --   if disable_filetypes[vim.bo[bufnr].filetype] then
+      --     lsp_format_opt = 'never'
+      --   else
+      --     lsp_format_opt = 'fallback'
+      --   end
+      --   return {
+      --     timeout_ms = 500,
+      --     lsp_format = lsp_format_opt,
+      --   }
+      -- end,
       formatters_by_ft = {
         lua = { 'stylua' },
         xml = { 'xmlformatter' },
@@ -1051,8 +1050,6 @@ require('lazy').setup({
         sql = { 'sqlfmt' },
         shell = { 'beautysh' },
         java = { 'ast-grep' },
-        -- xsl = { 'xmllint', 'prettier' },
-        -- xsl = { 'xmllint' },
         markdown = { 'prettier' },
         json = { 'jq' },
         python = { 'black' },
